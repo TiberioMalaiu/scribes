@@ -1,0 +1,17 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* Legacy global styles below — nobody removed these when Tailwind was added */
+body {
+  margin: 0;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  -webkit-font-smoothing: antialiased;
+  color: #1a1a2e;
+  background: #f8f9fa;
+}
+
+/* These clash with Tailwind resets but "still work" */
+a { color: #2563eb; text-decoration: none; }
+a:hover { text-decoration: underline; }
+* { box-sizing: border-box; }

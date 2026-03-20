@@ -1,0 +1,33 @@
+.task-list {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.task-list__header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid #e5e7eb;
+  margin-bottom: 8px;
+}
+
+.task-list__count {
+  font-size: 13px;
+  color: #6b7280;
+  font-weight: 500;
+}
+
+.task-list__items {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.task-list__empty {
+  padding: 40px 20px;
+  text-align: center;
+  color: #9ca3af;
+  font-size: 14px;
+}

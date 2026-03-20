@@ -1,0 +1,129 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: #fff;
+  border-left: 1px solid #e5e7eb;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #e5e7eb;
+}
+
+.headerLeft {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.taskId {
+  font-size: 12px;
+  color: #9ca3af;
+  font-family: monospace;
+}
+
+.closeBtn {
+  background: none;
+  border: none;
+  font-size: 20px;
+  color: #9ca3af;
+  cursor: pointer;
+}
+
+.closeBtn:hover { color: #374151; }
+
+.body {
+  flex: 1;
+  padding: 20px;
+  overflow-y: auto;
+}
+
+.title {
+  font-size: 20px;
+  font-weight: 600;
+  margin: 0 0 8px;
+  color: #111827;
+}
+
+.description {
+  font-size: 14px;
+  color: #4b5563;
+  line-height: 1.6;
+  margin: 0 0 16px;
+}
+
+.editForm {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.editTitle {
+  font-size: 18px;
+  font-weight: 600;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+}
+
+.editDesc {
+  font-size: 14px;
+  padding: 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  resize: vertical;
+}
+
+.editActions {
+  display: flex;
+  gap: 8px;
+}
+
+.meta {
+  margin-top: 20px;
+  padding-top: 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metaItem {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.metaLabel {
+  font-size: 12px;
+  color: #9ca3af;
+  width: 80px;
+  flex-shrink: 0;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.assignee {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+
+.unassigned {
+  font-size: 14px;
+  color: #9ca3af;
+  font-style: italic;
+}
+
+.footer {
+  padding: 16px 20px;
+  border-top: 1px solid #e5e7eb;
+  display: flex;
+  justify-content: flex-end;
+}

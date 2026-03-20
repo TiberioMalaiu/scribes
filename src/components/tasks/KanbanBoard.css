@@ -1,0 +1,36 @@
+/* KanbanBoard.css — partially deprecated, some classes still in use */
+.kanban-column {
+  min-width: 280px;
+  max-width: 320px;
+  flex-shrink: 0;
+  background: #f9fafb;
+  border-radius: 8px;
+  padding: 8px;
+}
+
+.kanban-column--drop-active {
+  background: #eff6ff;
+  outline: 2px dashed #3b82f6;
+}
+
+.kanban-column__body {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  min-height: 100px;
+}
+
+/* Dead CSS — was removed from JSX during Tailwind migration but nobody cleaned up */
+.kanban-column__header {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px;
+  font-weight: 600;
+}
+
+.kanban-column__count {
+  background: #e5e7eb;
+  border-radius: 999px;
+  padding: 2px 8px;
+  font-size: 12px;
+}
