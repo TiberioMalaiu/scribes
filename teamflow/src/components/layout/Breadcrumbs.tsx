@@ -1,7 +1,7 @@
 import React from 'react';
 import { useLocation, Link } from 'react-router-dom';
 
-const routeNames = {
+const routeNames: Record<string, string> = {
   '': 'Dashboard',
   'tasks': 'Tasks',
   'projects': 'Projects',

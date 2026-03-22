@@ -1,7 +1,13 @@
 import React from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from 'recharts';
+import type { VelocityDataPoint } from '../../api/analytics';
 
-const containerStyle = {
+interface VelocityChartProps {
+  data: VelocityDataPoint[] | null;
+  height?: number;
+}
+
+const containerStyle: React.CSSProperties = {
   width: '100%',
   padding: '16px',
   background: '#fff',
@@ -9,21 +15,21 @@ const containerStyle = {
   border: '1px solid #e5e7eb',
 };
 
-const titleStyle = {
+const titleStyle: React.CSSProperties = {
   fontSize: '16px',
   fontWeight: 600,
   color: '#111827',
   marginBottom: '16px',
 };
 
-const emptyStyle = {
+const emptyStyle: React.CSSProperties = {
   textAlign: 'center',
   color: '#9ca3af',
   padding: '40px 0',
   fontSize: '14px',
 };
 
-export default function VelocityChart({ data, height }) {
+export default function VelocityChart({ data, height }: VelocityChartProps) {
   if (!data || data.length === 0) {
     return (
       <div style={containerStyle}>

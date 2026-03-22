@@ -1,20 +1,32 @@
 import React, { useState } from 'react';
 import './KanbanBoard.css';
 import TaskCard from './TaskCard';
+import type { Task, UpdateTaskData } from '../../api/tasks';
 
-export default function KanbanBoard({ tasks, onUpdateTask, columns }) {
-  const [draggedTask, setDraggedTask] = useState(null);
-  const [localColumns, setLocalColumns] = useState(columns || []);
-  const [dropTarget, setDropTarget] = useState(null);
+interface KanbanColumn {
+  id: string;
+  name: string;
+}
 
-  const handleDragStart = (task, e) => {
+interface KanbanBoardProps {
+  tasks: Task[];
+  onUpdateTask: (taskId: string, updates: UpdateTaskData) => void;
+  columns: KanbanColumn[];
+}
+
+export default function KanbanBoard({ tasks, onUpdateTask, columns }: KanbanBoardProps) {
+  const [draggedTask, setDraggedTask] = useState<Task | null>(null);
+  const [localColumns, setLocalColumns] = useState<KanbanColumn[]>(columns || []);
+  const [dropTarget, setDropTarget] = useState<string | null>(null);
+
+  const handleDragStart = (task: Task, e: React.DragEvent<HTMLDivElement>) => {
     setDraggedTask(task);
     e.dataTransfer.effectAllowed = 'move';
     // HACK: Firefox requires data to be set
     e.dataTransfer.setData('text/plain', task.id);
   };
 
-  const handleDrop = (columnId, e) => {
+  const handleDrop = (columnId: string, e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     if (!draggedTask) return;
 
@@ -24,7 +36,7 @@ export default function KanbanBoard({ tasks, onUpdateTask, columns }) {
     setDropTarget(null);
   };
 
-  const getTasksForColumn = (colId) => {
+  const getTasksForColumn = (colId: string): Task[] => {
     return tasks.filter(t => t.status === colId);
   };
 
@@ -38,9 +50,9 @@ export default function KanbanBoard({ tasks, onUpdateTask, columns }) {
         <div
           key={col.id}
           className={`kanban-column ${dropTarget === col.id ? 'kanban-column--drop-active' : ''}`}
-          onDragOver={e => { e.preventDefault(); setDropTarget(col.id); }}
+          onDragOver={(e: React.DragEvent<HTMLDivElement>) => { e.preventDefault(); setDropTarget(col.id); }}
           onDragLeave={() => setDropTarget(null)}
-          onDrop={e => handleDrop(col.id, e)}
+          onDrop={(e: React.DragEvent<HTMLDivElement>) => handleDrop(col.id, e)}
         >
           {/* New Tailwind header, old CSS body */}
           <div className="flex items-center justify-between px-2 py-3 mb-2">
@@ -54,7 +66,7 @@ export default function KanbanBoard({ tasks, onUpdateTask, columns }) {
               <div
                 key={task.id}
                 draggable
-                onDragStart={e => handleDragStart(task, e)}
+                onDragStart={(e: React.DragEvent<HTMLDivElement>) => handleDragStart(task, e)}
               >
                 <TaskCard
                   task={task}

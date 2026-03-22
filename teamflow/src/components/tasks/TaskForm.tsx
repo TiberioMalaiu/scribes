@@ -1,11 +1,28 @@
 import React, { useState } from 'react';
 import { TASK_STATUSES, TASK_PRIORITIES } from '../../utils/constants';
 import { validateTaskForm } from '../../utils/validators';
+import type { TaskFormData as ValidatorTaskFormData, TaskFormErrors } from '../../utils/validators';
 import Button from '../common/Button';
 
+interface TaskFormData {
+  title: string;
+  description: string;
+  status: string;
+  priority: string;
+  assigneeId: string;
+  dueDate: string;
+  points: number | string;
+}
+
+interface TaskFormProps {
+  initialData?: Partial<TaskFormData> | null;
+  onSubmit: (data: TaskFormData) => void;
+  onCancel?: () => void;
+}
+
 // TODO: migrate to TypeScript — form state needs proper types
-export default function TaskForm({ initialData, onSubmit, onCancel }) {
-  const [formData, setFormData] = useState({
+export default function TaskForm({ initialData, onSubmit, onCancel }: TaskFormProps) {
+  const [formData, setFormData] = useState<TaskFormData>({
     title: '',
     description: '',
     status: 'todo',
@@ -15,19 +32,25 @@ export default function TaskForm({ initialData, onSubmit, onCancel }) {
     points: '',
     ...initialData,
   });
-  const [errors, setErrors] = useState({});
+  const [errors, setErrors] = useState<TaskFormErrors>({});
 
-  const handleChange = (field, value) => {
+  const handleChange = (field: keyof TaskFormData, value: string | number) => {
     setFormData(prev => ({ ...prev, [field]: value }));
     // Clear error on change
-    if (errors[field]) {
+    if (errors[field as keyof TaskFormErrors]) {
       setErrors(prev => ({ ...prev, [field]: undefined }));
     }
   };
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const { valid, errors: validationErrors } = validateTaskForm(formData);
+    const validatorData: ValidatorTaskFormData = {
+      title: formData.title,
+      description: formData.description || undefined,
+      dueDate: formData.dueDate || undefined,
+      points: typeof formData.points === 'number' ? formData.points : undefined,
+    };
+    const { valid, errors: validationErrors } = validateTaskForm(validatorData);
     if (!valid) {
       setErrors(validationErrors);
       return;

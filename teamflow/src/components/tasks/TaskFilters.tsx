@@ -1,8 +1,20 @@
 import React from 'react';
 import { TASK_STATUSES, TASK_PRIORITIES } from '../../utils/constants';
 
-export default function TaskFilters({ filters, onFilterChange }) {
-  const handleChange = (key, value) => {
+interface TaskFiltersState {
+  status?: string;
+  priority?: string;
+  search?: string;
+  [key: string]: string | undefined;
+}
+
+interface TaskFiltersProps {
+  filters: TaskFiltersState;
+  onFilterChange: (filters: TaskFiltersState) => void;
+}
+
+export default function TaskFilters({ filters, onFilterChange }: TaskFiltersProps) {
+  const handleChange = (key: string, value: string) => {
     onFilterChange({ ...filters, [key]: value });
   };
 

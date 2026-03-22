@@ -1,14 +1,22 @@
 import React from 'react';
 import { STATUS_COLORS, PRIORITY_COLORS } from '../../utils/constants';
 
-const typeConfig = {
+type BadgeType = 'status' | 'priority';
+
+interface BadgeProps {
+  type: BadgeType;
+  value?: string;
+  label?: string;
+}
+
+const typeConfig: Record<BadgeType, Record<string, string>> = {
   status: STATUS_COLORS,
   priority: PRIORITY_COLORS,
 };
 
-export default function Badge({ type, value, label }) {
+export default function Badge({ type, value, label }: BadgeProps) {
   const colors = typeConfig[type] || {};
-  const bgColor = colors[value] || '#d1d5db';
+  const bgColor = (value ? colors[value] : undefined) || '#d1d5db';
 
   return (
     <span

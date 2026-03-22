@@ -6,20 +6,28 @@ import Breadcrumbs from './Breadcrumbs';
 import { useAuth } from '../../hooks/useAuth';
 import { useDebounce } from '../../hooks/useDebounce';
 
+interface HeaderDropdownOption {
+  label?: string;
+  value?: string;
+  icon?: React.ReactNode;
+  danger?: boolean;
+  divider?: boolean;
+}
+
 export default function Header() {
   const { user } = useAuth();
   const [searchQuery, setSearchQuery] = useState('');
   const [notificationCount] = useState(3);  // Hardcoded for now
   const debouncedQuery = useDebounce(searchQuery, 400);
 
-  const userMenuOptions = [
+  const userMenuOptions: HeaderDropdownOption[] = [
     { label: 'Profile', value: 'profile', icon: '👤' },
     { label: 'Settings', value: 'settings', icon: '⚙️' },
     { divider: true },
     { label: 'Log out', value: 'logout', icon: '🚪', danger: true },
   ];
 
-  const handleUserMenuSelect = (option) => {
+  const handleUserMenuSelect = (option: HeaderDropdownOption) => {
     if (option.value === 'logout') {
       // TODO: call logout
       console.log('logout');

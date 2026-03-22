@@ -1,8 +1,16 @@
 import React from 'react';
 import './TaskList.css';
 import TaskCard from './TaskCard';
+import type { Task, UpdateTaskData } from '../../api/tasks';
 
-export default function TaskList({ tasks, onSelectTask, onUpdateTask, emptyMessage }) {
+interface TaskListProps {
+  tasks: Task[] | null;
+  onSelectTask: (task: Task) => void;
+  onUpdateTask: (taskId: string, updates: UpdateTaskData) => void;
+  emptyMessage?: string;
+}
+
+export default function TaskList({ tasks, onSelectTask, onUpdateTask, emptyMessage }: TaskListProps) {
   if (!tasks || tasks.length === 0) {
     return <div className="task-list__empty">{emptyMessage || 'No tasks found'}</div>;
   }
@@ -18,7 +26,7 @@ export default function TaskList({ tasks, onSelectTask, onUpdateTask, emptyMessa
             key={task.id}
             task={task}
             onSelect={() => onSelectTask(task)}
-            onStatusChange={(status) => onUpdateTask(task.id, { status })}
+            onStatusChange={(status: string) => onUpdateTask(task.id, { status })}
           />
         ))}
       </div>
