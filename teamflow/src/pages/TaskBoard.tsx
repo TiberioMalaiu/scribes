@@ -9,17 +9,25 @@ import Spinner from '../components/common/Spinner';
 import EmptyState from '../components/common/EmptyState';
 import Button from '../components/common/Button';
 import { TASK_STATUSES } from '../utils/constants';
+import type { Task, UpdateTaskData } from '../api/tasks';
 
-const KANBAN_COLUMNS = TASK_STATUSES.map(s => ({
+interface KanbanColumn {
+  id: string;
+  name: string;
+}
+
+type ViewMode = 'list' | 'board';
+
+const KANBAN_COLUMNS: KanbanColumn[] = TASK_STATUSES.map(s => ({
   id: s,
   name: s.replace(/_/g, ' ').replace(/\b\w/g, c => c.toUpperCase()),
 }));
 
-export default function TaskBoard() {
-  const { currentProject } = useContext(ProjectContext);
+export default function TaskBoard(): React.ReactElement {
+  const { currentProject } = useContext(ProjectContext)!;
   const { tasks, loading, filters, setFilters, update, remove } = useTasks(currentProject?.id);
-  const [viewMode, setViewMode] = useState('list');
-  const [selectedTask, setSelectedTask] = useState(null);
+  const [viewMode, setViewMode] = useState<ViewMode>('list');
+  const [selectedTask, setSelectedTask] = useState<Task | null>(null);
 
   if (loading) {
     return (
@@ -62,7 +70,7 @@ export default function TaskBoard() {
 
       {/* Filters */}
       <div className="mb-4">
-        <TaskFilters filters={filters} onFilterChange={setFilters} />
+        <TaskFilters filters={filters as Record<string, string | undefined>} onFilterChange={setFilters} />
       </div>
 
       {/* Content */}
@@ -79,12 +87,12 @@ export default function TaskBoard() {
             <TaskList
               tasks={tasks}
               onSelectTask={setSelectedTask}
-              onUpdateTask={(id, updates) => update(id, updates)}
+              onUpdateTask={(id: string, updates: UpdateTaskData) => update(id, updates)}
             />
           ) : (
             <KanbanBoard
               tasks={tasks}
-              onUpdateTask={(id, updates) => update(id, updates)}
+              onUpdateTask={(id: string, updates: UpdateTaskData) => update(id, updates)}
               columns={KANBAN_COLUMNS}
             />
           )}
@@ -95,8 +103,8 @@ export default function TaskBoard() {
           <div className="w-96 flex-shrink-0">
             <TaskDetail
               task={selectedTask}
-              onUpdate={(id, updates) => update(id, updates)}
-              onDelete={(id) => { remove(id); setSelectedTask(null); }}
+              onUpdate={(id: string, updates: UpdateTaskData) => update(id, updates)}
+              onDelete={(id: string) => { remove(id); setSelectedTask(null); }}
               onClose={() => setSelectedTask(null)}
             />
           </div>

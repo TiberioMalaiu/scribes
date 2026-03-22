@@ -7,25 +7,32 @@ import Spinner from '../components/common/Spinner';
 import Button from '../components/common/Button';
 import TaskForm from '../components/tasks/TaskForm';
 import Modal from '../components/common/Modal';
+import type { Task } from '../api/tasks';
 
-export default function Dashboard() {
-  const { currentProject } = useContext(ProjectContext);
+interface DashboardStat {
+  label: string;
+  value: number;
+  color: string;
+}
+
+export default function Dashboard(): React.ReactElement {
+  const { currentProject } = useContext(ProjectContext)!;
   const { tasks, loading } = useTasks(currentProject?.id);
-  const [showQuickAdd, setShowQuickAdd] = useState(false);
+  const [showQuickAdd, setShowQuickAdd] = useState<boolean>(false);
 
-  const overdueTasks = tasks.filter(t => {
+  const overdueTasks: Task[] = tasks.filter(t => {
     if (!t.dueDate) return false;
     return new Date(t.dueDate) < new Date() && t.status !== 'done';
   });
 
-  const completedThisWeek = tasks.filter(t => {
+  const completedThisWeek: Task[] = tasks.filter(t => {
     if (t.status !== 'done' || !t.completedAt) return false;
     const weekAgo = new Date();
     weekAgo.setDate(weekAgo.getDate() - 7);
     return new Date(t.completedAt) > weekAgo;
   });
 
-  const stats = [
+  const stats: DashboardStat[] = [
     { label: 'Total Tasks', value: tasks.length, color: '#3b82f6' },
     { label: 'Completed This Week', value: completedThisWeek.length, color: '#10b981' },
     { label: 'Overdue', value: overdueTasks.length, color: '#ef4444' },
