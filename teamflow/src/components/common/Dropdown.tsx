@@ -2,11 +2,27 @@ import React, { useState } from 'react';
 import './Dropdown.css';
 import { useClickOutside } from '../../hooks/useClickOutside';
 
-export default function Dropdown({ trigger, options, onSelect, align }) {
+interface DropdownOption {
+  label?: string;
+  value?: string;
+  icon?: React.ReactNode;
+  danger?: boolean;
+  disabled?: boolean;
+  divider?: boolean;
+}
+
+interface DropdownProps {
+  trigger: React.ReactNode;
+  options: DropdownOption[];
+  onSelect: (option: DropdownOption) => void;
+  align?: 'left' | 'right';
+}
+
+export default function Dropdown({ trigger, options, onSelect, align }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
   const ref = useClickOutside(() => setIsOpen(false));
 
-  const handleSelect = (option) => {
+  const handleSelect = (option: DropdownOption) => {
     onSelect(option);
     setIsOpen(false);
   };

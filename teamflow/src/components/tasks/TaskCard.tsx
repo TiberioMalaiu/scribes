@@ -5,9 +5,17 @@ import Badge from '../common/Badge';
 import { PRIORITY_COLORS } from '../../utils/constants';
 import { formatDate } from '../../utils/formatters';
 import { isOverdue } from '../../utils/dateUtils';
+import type { Task } from '../../api/tasks';
 
-export default function TaskCard({ task, onSelect, onStatusChange, isDragging }) {
-  const priorityColor = PRIORITY_COLORS[task.priority] || PRIORITY_COLORS.none;
+interface TaskCardProps {
+  task: Task;
+  onSelect: () => void;
+  onStatusChange?: (status: string) => void;
+  isDragging?: boolean;
+}
+
+export default function TaskCard({ task, onSelect, onStatusChange, isDragging }: TaskCardProps) {
+  const priorityColor = PRIORITY_COLORS[task.priority as keyof typeof PRIORITY_COLORS] || PRIORITY_COLORS.none;
 
   return (
     <div

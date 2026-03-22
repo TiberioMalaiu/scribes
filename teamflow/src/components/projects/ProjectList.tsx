@@ -1,8 +1,14 @@
 import React, { useState } from 'react';
 import ProjectCard from './ProjectCard';
 import { useDebounce } from '../../hooks/useDebounce';
+import type { Project } from '../../api/projects';
 
-export default function ProjectList({ projects, onSelectProject }) {
+interface ProjectListProps {
+  projects: Project[];
+  onSelectProject: (projectId: string) => void;
+}
+
+export default function ProjectList({ projects, onSelectProject }: ProjectListProps) {
   const [search, setSearch] = useState('');
   const debouncedSearch = useDebounce(search, 300);
 

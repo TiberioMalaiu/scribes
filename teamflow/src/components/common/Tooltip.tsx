@@ -1,10 +1,23 @@
 import React, { useState, useRef, useEffect } from 'react';
 import styles from './Tooltip.module.css';
 
-export default function Tooltip({ children, content, position }) {
+type TooltipPosition = 'top' | 'bottom' | 'left' | 'right';
+
+interface TooltipCoords {
+  top: number;
+  left: number;
+}
+
+interface TooltipProps {
+  children: React.ReactNode;
+  content?: React.ReactNode;
+  position?: TooltipPosition;
+}
+
+export default function Tooltip({ children, content, position }: TooltipProps) {
   const [visible, setVisible] = useState(false);
-  const [coords, setCoords] = useState({ top: 0, left: 0 });
-  const triggerRef = useRef(null);
+  const [coords, setCoords] = useState<TooltipCoords>({ top: 0, left: 0 });
+  const triggerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     if (visible && triggerRef.current) {

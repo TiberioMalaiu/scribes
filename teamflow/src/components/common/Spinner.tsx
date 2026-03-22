@@ -1,6 +1,13 @@
 import React from 'react';
 
-const spinnerStyle = {
+type SpinnerSize = 'sm' | 'md' | 'lg';
+
+interface SpinnerProps {
+  size?: SpinnerSize;
+  color?: string;
+}
+
+const spinnerStyle: React.CSSProperties = {
   display: 'inline-block',
   width: '20px',
   height: '20px',
@@ -11,9 +18,9 @@ const spinnerStyle = {
 };
 
 // Someone injected a keyframe via JS because inline styles don't support @keyframes
-const Spinner = ({ size, color }) => {
-  const sizeMap = { sm: 16, md: 20, lg: 32 };
-  const actualSize = sizeMap[size] || sizeMap.md;
+const Spinner = ({ size, color }: SpinnerProps) => {
+  const sizeMap: Record<SpinnerSize, number> = { sm: 16, md: 20, lg: 32 };
+  const actualSize = sizeMap[size || 'md'];
 
   return (
     <>

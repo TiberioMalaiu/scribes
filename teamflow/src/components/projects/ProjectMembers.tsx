@@ -5,8 +5,20 @@ import Badge from '../common/Badge';
 import Button from '../common/Button';
 import { PROJECT_ROLES } from '../../utils/constants';
 import { useAuth } from '../../hooks/useAuth';
+import type { ProjectMember } from '../../api/projects';
 
-export default function ProjectMembers({ members, onInvite, onRemove, onRoleChange }) {
+interface ProjectMemberWithEmail extends ProjectMember {
+  email?: string;
+}
+
+interface ProjectMembersProps {
+  members: ProjectMemberWithEmail[];
+  onInvite: (email: string) => void;
+  onRemove: (memberId: string) => void;
+  onRoleChange: (memberId: string, role: string) => void;
+}
+
+export default function ProjectMembers({ members, onInvite, onRemove, onRoleChange }: ProjectMembersProps) {
   const { user } = useAuth();
   const [inviteEmail, setInviteEmail] = useState('');
 

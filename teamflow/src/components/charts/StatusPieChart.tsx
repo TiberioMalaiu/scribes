@@ -1,9 +1,21 @@
 import React from 'react';
 import { PieChart, Pie, Cell, Tooltip, ResponsiveContainer, Legend } from 'recharts';
 import { STATUS_COLORS, TASK_STATUSES } from '../../utils/constants';
+import type { Task } from '../../api/tasks';
 
-export default function StatusPieChart({ tasks, height }) {
-  const statusData = TASK_STATUSES.map(status => ({
+interface StatusDataEntry {
+  name: string;
+  value: number;
+  color: string;
+}
+
+interface StatusPieChartProps {
+  tasks: Task[] | null;
+  height?: number;
+}
+
+export default function StatusPieChart({ tasks, height }: StatusPieChartProps) {
+  const statusData: StatusDataEntry[] = TASK_STATUSES.map(status => ({
     name: status.replace(/_/g, ' '),
     value: (tasks || []).filter(t => t.status === status).length,
     color: STATUS_COLORS[status],
@@ -37,7 +49,7 @@ export default function StatusPieChart({ tasks, height }) {
             ))}
           </Pie>
           <Tooltip
-            formatter={(value, name) => [`${value} tasks`, name]}
+            formatter={(value: number, name: string) => [`${value} tasks`, name]}
             contentStyle={{
               background: '#fff',
               border: '1px solid #e5e7eb',
@@ -46,7 +58,7 @@ export default function StatusPieChart({ tasks, height }) {
             }}
           />
           <Legend
-            formatter={(value) => (
+            formatter={(value: string) => (
               <span className="text-xs text-gray-600 capitalize">{value}</span>
             )}
           />

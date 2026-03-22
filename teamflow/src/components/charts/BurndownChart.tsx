@@ -1,11 +1,25 @@
 import React, { Component } from 'react';
 import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, Legend, ResponsiveContainer } from 'recharts';
 import { getBurndownData } from '../../api/analytics';
+import type { BurndownDataPoint, BurndownResponse } from '../../api/analytics';
 import Spinner from '../common/Spinner';
 
+interface BurndownChartProps {
+  sprintId?: string;
+  height?: number;
+}
+
+interface BurndownChartState {
+  data: BurndownDataPoint[];
+  loading: boolean;
+  error: string | null;
+}
+
 // Don't touch BurndownChart.jsx unless you absolutely have to
-class BurndownChart extends Component {
-  constructor(props) {
+class BurndownChart extends Component<BurndownChartProps, BurndownChartState> {
+  private seedData: BurndownDataPoint[];
+
+  constructor(props: BurndownChartProps) {
     super(props);
     // HACK: seed data for dev — remove when backend is ready
     this.seedData = [
@@ -31,7 +45,7 @@ class BurndownChart extends Component {
     this.fetchData();
   }
 
-  componentDidUpdate(prevProps) {
+  componentDidUpdate(prevProps: BurndownChartProps) {
     if (prevProps.sprintId !== this.props.sprintId) {
       this.fetchData();
     }
@@ -43,9 +57,9 @@ class BurndownChart extends Component {
 
     this.setState({ loading: true });
     try {
-      const data = await getBurndownData(sprintId);
+      const data: BurndownResponse = await getBurndownData(sprintId);
       // FIXME: this should validate the response shape
-      const points = data?.points || data;
+      const points = data?.points || (data as unknown as BurndownDataPoint[]);
       this.setState({ data: Array.isArray(points) ? points : this.seedData, loading: false });
     } catch (err) {
       // Keep seed data if API is unavailable
@@ -58,7 +72,7 @@ class BurndownChart extends Component {
     const { data, loading, error } = this.state;
     const { height } = this.props;
 
-    const containerStyle = {
+    const containerStyle: React.CSSProperties = {
       width: '100%',
       padding: '16px',
       background: '#fff',
@@ -66,7 +80,7 @@ class BurndownChart extends Component {
       border: '1px solid #e5e7eb',
     };
 
-    const titleStyle = {
+    const titleStyle: React.CSSProperties = {
       fontSize: '16px',
       fontWeight: 600,
       color: '#111827',

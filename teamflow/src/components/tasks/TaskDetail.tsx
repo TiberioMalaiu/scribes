@@ -6,10 +6,26 @@ import Button from '../common/Button';
 import TaskComments from './TaskComments';
 import { formatDate } from '../../utils/formatters';
 import { canEditTask, canDeleteTask } from '../../utils/permissions';
+import type { PermissionUser } from '../../utils/permissions';
 import { useAuth } from '../../hooks/useAuth';
+import type { Task, UpdateTaskData } from '../../api/tasks';
+
+interface Comment {
+  id?: string;
+  author?: { id?: string; name?: string; avatarUrl?: string | null } | null;
+  text: string;
+  createdAt?: string;
+}
+
+interface TaskDetailProps {
+  task: Task | null;
+  onUpdate: (taskId: string, updates: UpdateTaskData) => void;
+  onDelete: (taskId: string) => void;
+  onClose: () => void;
+}
 
 // TODO: migrate to TypeScript
-export default function TaskDetail({ task, onUpdate, onDelete, onClose }) {
+export default function TaskDetail({ task, onUpdate, onDelete, onClose }: TaskDetailProps) {
   const { user } = useAuth();
   const [isEditing, setIsEditing] = useState(false);
   const [editTitle, setEditTitle] = useState(task?.title || '');
@@ -22,8 +38,12 @@ export default function TaskDetail({ task, onUpdate, onDelete, onClose }) {
     setIsEditing(false);
   };
 
-  const canEdit = canEditTask(user, task);
-  const canDelete = canDeleteTask(user, task);
+  const permissionUser: PermissionUser | null = user
+    ? { id: user.id, role: user.role as PermissionUser['role'] }
+    : null;
+  const permissionTask = { assigneeId: task.assigneeId ?? '', createdBy: task.createdBy };
+  const canEdit = canEditTask(permissionUser, permissionTask);
+  const canDelete = canDeleteTask(permissionUser, permissionTask);
 
   return (
     <div className={styles.container}>
@@ -93,7 +113,7 @@ export default function TaskDetail({ task, onUpdate, onDelete, onClose }) {
           </div>
         </div>
 
-        <TaskComments taskId={task.id} comments={task.comments || []} />
+        <TaskComments taskId={task.id} comments={(task.comments || []) as Comment[]} />
       </div>
 
       {canDelete && (

@@ -2,18 +2,29 @@ import React, { useEffect, useRef } from 'react';
 import styles from './Modal.module.css';
 import clsx from 'clsx';
 
-export default function Modal({ isOpen, onClose, title, children, size, footer }) {
-  const overlayRef = useRef(null);
+type ModalSize = 'sm' | 'md' | 'lg';
+
+interface ModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  title: string;
+  children: React.ReactNode;
+  size?: ModalSize;
+  footer?: React.ReactNode;
+}
+
+export default function Modal({ isOpen, onClose, title, children, size, footer }: ModalProps) {
+  const overlayRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
-    const handleEsc = (e) => { if (e.key === 'Escape') onClose(); };
+    const handleEsc = (e: KeyboardEvent) => { if (e.key === 'Escape') onClose(); };
     if (isOpen) document.addEventListener('keydown', handleEsc);
     return () => document.removeEventListener('keydown', handleEsc);
   }, [isOpen, onClose]);
 
   if (!isOpen) return null;
 
-  const handleOverlayClick = (e) => {
+  const handleOverlayClick = (e: React.MouseEvent<HTMLDivElement>) => {
     if (e.target === overlayRef.current) onClose();
   };
 

@@ -4,13 +4,31 @@ import Avatar from '../common/Avatar';
 import { formatDate } from '../../utils/formatters';
 import { useAuth } from '../../hooks/useAuth';
 
-export default function TaskComments({ taskId, comments }) {
+interface CommentAuthor {
+  id?: string;
+  name?: string;
+  avatarUrl?: string | null;
+}
+
+interface Comment {
+  id?: string;
+  author?: CommentAuthor | null;
+  text: string;
+  createdAt?: string;
+}
+
+interface TaskCommentsProps {
+  taskId: string;
+  comments: Comment[];
+}
+
+export default function TaskComments({ taskId, comments }: TaskCommentsProps) {
   const { user } = useAuth();
   const [newComment, setNewComment] = useState('');
   // eslint-disable-next-line no-unused-vars
   const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     if (!newComment.trim()) return;
 

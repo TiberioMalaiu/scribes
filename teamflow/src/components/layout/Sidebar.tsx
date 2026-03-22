@@ -5,11 +5,21 @@ import { ProjectContext } from '../../context/ProjectContext';
 import { useAuth } from '../../hooks/useAuth';
 import Avatar from '../common/Avatar';
 
+interface NavItem {
+  to: string;
+  label: string;
+  icon: string;
+}
+
 export default function Sidebar() {
-  const { projects, currentProject, selectProject } = useContext(ProjectContext);
+  const projectCtx = useContext(ProjectContext);
   const { user, logout } = useAuth();
 
-  const navItems = [
+  const projects = projectCtx?.projects ?? [];
+  const currentProject = projectCtx?.currentProject ?? null;
+  const selectProject = projectCtx?.selectProject ?? (() => Promise.resolve());
+
+  const navItems: NavItem[] = [
     { to: '/', label: 'Dashboard', icon: '📊' },
     { to: '/tasks', label: 'Tasks', icon: '✅' },
     { to: '/analytics', label: 'Analytics', icon: '📈' },

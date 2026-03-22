@@ -3,12 +3,31 @@ import './ProjectSettings.css';
 import Button from '../common/Button';
 import { validateProjectName } from '../../utils/validators';
 
-export default function ProjectSettings({ project, onSave }) {
+interface ProjectSettingsData {
+  name: string;
+  description: string;
+  defaultAssigneeId: string;
+  archived: boolean;
+}
+
+interface ProjectSettingsProject {
+  name?: string;
+  description?: string;
+  defaultAssigneeId?: string;
+  archived?: boolean;
+}
+
+interface ProjectSettingsProps {
+  project?: ProjectSettingsProject | null;
+  onSave: (data: ProjectSettingsData) => void;
+}
+
+export default function ProjectSettings({ project, onSave }: ProjectSettingsProps) {
   const [name, setName] = useState(project?.name || '');
   const [description, setDescription] = useState(project?.description || '');
   const [defaultAssignee, setDefaultAssignee] = useState(project?.defaultAssigneeId || '');
   const [archived, setArchived] = useState(project?.archived || false);
-  const [nameError, setNameError] = useState(null);
+  const [nameError, setNameError] = useState<string | null>(null);
 
   const handleSave = () => {
     const error = validateProjectName(name);

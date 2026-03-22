@@ -1,8 +1,14 @@
 import React from 'react';
 import Avatar from '../common/Avatar';
 import { formatDate } from '../../utils/formatters';
+import type { Project } from '../../api/projects';
 
-export default function ProjectCard({ project, onClick }) {
+interface ProjectCardProps {
+  project: Project;
+  onClick: () => void;
+}
+
+export default function ProjectCard({ project, onClick }: ProjectCardProps) {
   const completedTasks = project.taskCounts?.done || 0;
   const totalTasks = Object.values(project.taskCounts || {}).reduce((a, b) => a + b, 0);
   const progress = totalTasks > 0 ? Math.round((completedTasks / totalTasks) * 100) : 0;
