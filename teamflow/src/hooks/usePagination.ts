@@ -1,6 +1,17 @@
 import { useState, useMemo } from 'react';
 
-export function usePagination(totalItems, itemsPerPage) {
+interface PaginationResult {
+  currentPage: number;
+  totalPages: number;
+  canGoNext: boolean;
+  canGoPrev: boolean;
+  goToPage: (page: number) => void;
+  nextPage: () => void;
+  prevPage: () => void;
+  pageNumbers: (number | string)[];
+}
+
+export function usePagination(totalItems: number, itemsPerPage?: number): PaginationResult {
   const [currentPage, setCurrentPage] = useState(1);
 
   const totalPages = useMemo(
@@ -11,7 +22,7 @@ export function usePagination(totalItems, itemsPerPage) {
   const canGoNext = currentPage < totalPages;
   const canGoPrev = currentPage > 1;
 
-  const goToPage = (page) => {
+  const goToPage = (page: number): void => {
     const p = Math.max(1, Math.min(page, totalPages));
     setCurrentPage(p);
   };
@@ -21,7 +32,7 @@ export function usePagination(totalItems, itemsPerPage) {
 
   // Generate page numbers with ellipsis
   const pageNumbers = useMemo(() => {
-    const pages = [];
+    const pages: (number | string)[] = [];
     if (totalPages <= 7) {
       for (let i = 1; i <= totalPages; i++) pages.push(i);
     } else {

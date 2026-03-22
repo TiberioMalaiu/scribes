@@ -1,8 +1,29 @@
 import { useState, useEffect, useCallback } from 'react';
+import type { Dispatch, SetStateAction } from 'react';
 import { getTasks, updateTask, deleteTask } from '../api/tasks';
+import type { Task, TaskFilters, TaskListResponse, UpdateTaskData } from '../api/tasks';
+
+interface PaginationState {
+  page: number;
+  total: number;
+  perPage: number;
+}
+
+interface UseTasksReturn {
+  tasks: Task[];
+  loading: boolean;
+  error: string | null;
+  filters: TaskFilters;
+  setFilters: Dispatch<SetStateAction<TaskFilters>>;
+  pagination: PaginationState;
+  setPagination: Dispatch<SetStateAction<PaginationState>>;
+  update: (taskId: string, updates: UpdateTaskData) => Promise<Task>;
+  remove: (taskId: string) => Promise<void>;
+  refetch: () => Promise<void>;
+}
 
 // HACK: seed data for development — remove when backend is ready
-const SEED_TASKS = [
+const SEED_TASKS: Task[] = [
   { id: 'tsk_a1b2c3', title: 'Fix login redirect loop on expired sessions', description: 'Users are getting stuck in a redirect loop when their JWT expires mid-session. Need to handle 401s gracefully in the axios interceptor.', status: 'in_progress', priority: 'high', points: 5, assignee: { id: 'usr_001', name: 'Sarah Chen' }, assigneeId: 'usr_001', createdBy: 'usr_002', dueDate: '2026-03-22', createdAt: '2026-03-10T09:00:00Z', comments: [] },
   { id: 'tsk_d4e5f6', title: 'Add pagination to task list endpoint', description: 'The /tasks endpoint returns everything. Need to add limit/offset params and return total count.', status: 'todo', priority: 'medium', points: 3, assignee: { id: 'usr_002', name: 'Alex Rivera' }, assigneeId: 'usr_002', createdBy: 'usr_001', dueDate: '2026-03-25', createdAt: '2026-03-12T14:30:00Z', comments: [] },
   { id: 'tsk_g7h8i9', title: 'Migrate Button component to Tailwind', description: 'Button still uses inline styles from Year 1. Should use Tailwind classes for consistency with newer components.', status: 'backlog', priority: 'low', points: 2, assignee: null, assigneeId: null, createdBy: 'usr_005', dueDate: null, createdAt: '2026-03-08T11:00:00Z', comments: [] },
@@ -15,27 +36,28 @@ const SEED_TASKS = [
   { id: 'tsk_b8c9d0', title: 'Remove dead CSS from KanbanBoard.css', description: 'Half the classes in KanbanBoard.css are unused after the partial Tailwind migration. Clean it up.', status: 'done', priority: 'none', points: 1, assignee: { id: 'usr_005', name: 'Casey Kim' }, assigneeId: 'usr_005', createdBy: 'usr_005', dueDate: '2026-03-18', createdAt: '2026-03-13T12:00:00Z', completedAt: '2026-03-17T10:00:00Z', comments: [] },
 ];
 
-export function useTasks(projectId, initialFilters) {
-  const [tasks, setTasks] = useState(SEED_TASKS);
+export function useTasks(projectId: string | undefined, initialFilters?: TaskFilters): UseTasksReturn {
+  const [tasks, setTasks] = useState<Task[]>(SEED_TASKS);
   const [loading, setLoading] = useState(false);
-  const [error, setError] = useState(null);
-  const [filters, setFilters] = useState(initialFilters || {});
-  const [pagination, setPagination] = useState({ page: 1, total: 0, perPage: 25 });
+  const [error, setError] = useState<string | null>(null);
+  const [filters, setFilters] = useState<TaskFilters>(initialFilters || {});
+  const [pagination, setPagination] = useState<PaginationState>({ page: 1, total: 0, perPage: 25 });
 
   const fetchTasks = useCallback(async () => {
     if (!projectId) return;
     setLoading(true);
     try {
       const result = await getTasks(projectId, { ...filters, page: pagination.page });
-      const items = result?.items || result?.data || result;
+      const asResponse = result as TaskListResponse;
+      const items = asResponse?.items || asResponse?.data || result;
       // Only overwrite seed data if API returned a real array of tasks
       if (Array.isArray(items) && items.length > 0) {
         setTasks(items);  // API inconsistency
-        setPagination(prev => ({ ...prev, total: result?.total || result?.count || 0 }));
+        setPagination(prev => ({ ...prev, total: asResponse?.total || asResponse?.count || 0 }));
       }
     } catch (err) {
       // Keep seed data if API is unavailable
-      console.warn('Tasks API unavailable, using seed data:', err.message || err);
+      console.warn('Tasks API unavailable, using seed data:', err instanceof Error ? err.message : err);
     } finally {
       setLoading(false);
     }
@@ -43,13 +65,13 @@ export function useTasks(projectId, initialFilters) {
 
   useEffect(() => { fetchTasks(); }, [fetchTasks]);
 
-  const update = async (taskId, updates) => {
+  const update = async (taskId: string, updates: UpdateTaskData): Promise<Task> => {
     const updated = await updateTask(taskId, updates);
     setTasks(prev => prev.map(t => t.id === taskId ? { ...t, ...updated } : t));
     return updated;
   };
 
-  const remove = async (taskId) => {
+  const remove = async (taskId: string): Promise<void> => {
     await deleteTask(taskId);
     setTasks(prev => prev.filter(t => t.id !== taskId));
   };
