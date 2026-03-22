@@ -1,4 +1,3 @@
-// @ts-nocheck — someone started and gave up
 import React from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import { AuthProvider } from './context/AuthContext';
@@ -17,7 +16,15 @@ import NotFound from './pages/NotFound';
 import { useAuth } from './hooks/useAuth';
 import './App.css';
 
-function AppLayout({ children }) {
+interface AppLayoutProps {
+  children: React.ReactNode;
+}
+
+interface ProtectedRouteProps {
+  children: React.ReactNode;
+}
+
+function AppLayout({ children }: AppLayoutProps): React.JSX.Element {
   return (
     <div className="app-layout">
       <Sidebar />
@@ -30,14 +37,14 @@ function AppLayout({ children }) {
 }
 
 // HACK: this should use proper route guards
-function ProtectedRoute({ children }) {
+function ProtectedRoute({ children }: ProtectedRouteProps): React.JSX.Element {
   const { user, loading } = useAuth();
   if (loading) return <div>Loading...</div>;
   if (!user) return <Navigate to="/login" replace />;
-  return children;
+  return <>{children}</>;
 }
 
-function App() {
+function App(): React.JSX.Element {
   return (
     <BrowserRouter>
       <AuthProvider>
