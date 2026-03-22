@@ -65,7 +65,10 @@ def create_session(module, playbook_id):
 
 
 def get_session_status(session_id):
-    """Poll a session for its current status."""
-    resp = requests.get(f"{BASE_URL}/sessions/{session_id}", headers=get_headers())
+    """Poll a session for its current status.
+    The v3 API expects the devin- prefix on the session ID.
+    """
+    devin_id = session_id if session_id.startswith("devin-") else f"devin-{session_id}"
+    resp = requests.get(f"{BASE_URL}/sessions/{devin_id}", headers=get_headers())
     resp.raise_for_status()
     return resp.json()
