@@ -1,11 +1,8 @@
 import { format, formatDistanceToNow, isToday, isYesterday, parseISO } from 'date-fns';
 
-/**
- * @param {Date|string} date
- * @param {string} style
- * @returns {string}
- */
-export function formatDate(date, style = 'short') {
+export type DateFormatStyle = 'short' | 'relative' | 'smart' | 'full';
+
+export function formatDate(date: Date | string, style: DateFormatStyle = 'short'): string {
   const d = typeof date === 'string' ? parseISO(date) : date;
 
   if (style === 'relative') return formatDistanceToNow(d, { addSuffix: true });
@@ -19,25 +16,22 @@ export function formatDate(date, style = 'short') {
 }
 
 // No JSDoc — the "other developer" style
-export function formatCurrency(amount, currency) {
+export function formatCurrency(amount: number, currency?: string): string {
   return new Intl.NumberFormat('en-US', {
     style: 'currency',
     currency: currency || 'USD',
   }).format(amount);
 }
 
-/**
- * @param {string} text
- */
-export function truncate(text, maxLength) {
+export function truncate(text: string | null | undefined, maxLength: number): string {
   if (!text) return '';
   if (text.length <= maxLength) return text;
   return text.slice(0, maxLength) + '\u2026';
 }
 
-export function formatFileSize(bytes) {
+export function formatFileSize(bytes: number | null | undefined): string {
   if (!bytes) return '0 B';
-  const units = ['B', 'KB', 'MB', 'GB'];
+  const units = ['B', 'KB', 'MB', 'GB'] as const;
   let i = 0;
   let size = bytes;
   while (size >= 1024 && i < units.length - 1) {
@@ -47,6 +41,6 @@ export function formatFileSize(bytes) {
   return `${size.toFixed(i === 0 ? 0 : 1)} ${units[i]}`;
 }
 
-export function pluralize(count, singular, plural) {
+export function pluralize(count: number, singular: string, plural?: string): string {
   return count === 1 ? singular : (plural || singular + 's');
 }
