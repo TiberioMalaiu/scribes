@@ -6,8 +6,14 @@ import VelocityChart from '../components/charts/VelocityChart';
 import StatusPieChart from '../components/charts/StatusPieChart';
 import Button from '../components/common/Button';
 
+interface VelocityDataPoint {
+  sprint: string;
+  committed: number;
+  completed: number;
+}
+
 // HACK: seed velocity data until backend is ready
-const SEED_VELOCITY = [
+const SEED_VELOCITY: VelocityDataPoint[] = [
   { sprint: 'Sprint 18', committed: 34, completed: 28 },
   { sprint: 'Sprint 19', committed: 30, completed: 30 },
   { sprint: 'Sprint 20', committed: 38, completed: 32 },
@@ -16,10 +22,10 @@ const SEED_VELOCITY = [
   { sprint: 'Sprint 23', committed: 36, completed: 24 },
 ];
 
-export default function Analytics() {
-  const { currentProject } = useContext(ProjectContext);
+export default function Analytics(): React.ReactElement {
+  const { currentProject } = useContext(ProjectContext)!;
   const { tasks } = useTasks(currentProject?.id);
-  const [dateRange, setDateRange] = useState('month');
+  const [dateRange, setDateRange] = useState<string>('month');
 
   return (
     <div>
@@ -29,7 +35,7 @@ export default function Analytics() {
         <div className="flex items-center gap-3">
           <select
             value={dateRange}
-            onChange={(e) => setDateRange(e.target.value)}
+            onChange={(e: React.ChangeEvent<HTMLSelectElement>) => setDateRange(e.target.value)}
             className="px-3 py-1.5 text-sm border border-gray-300 rounded-lg bg-white focus:outline-none focus:ring-2 focus:ring-brand-500"
           >
             <option value="week">This Week</option>
@@ -44,7 +50,7 @@ export default function Analytics() {
 
       {/* Charts grid */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <BurndownChart sprintId={currentProject?.currentSprintId} />
+        <BurndownChart sprintId={currentProject?.currentSprintId ?? undefined} />
         <VelocityChart data={SEED_VELOCITY} />
       </div>
 

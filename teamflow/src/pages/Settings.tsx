@@ -5,13 +5,23 @@ import { ThemeContext } from '../context/ThemeContext';
 import Button from '../components/common/Button';
 import Avatar from '../components/common/Avatar';
 
-export default function Settings() {
-  const { user } = useAuth();
-  const { theme, toggleTheme } = useContext(ThemeContext);
-  const [name, setName] = useState(user?.name || '');
-  const [email, setEmail] = useState(user?.email || '');
+interface NotificationSettings {
+  taskAssigned: boolean;
+  taskUpdated: boolean;
+  mentions: boolean;
+  weeklyDigest: boolean;
+  marketing: boolean;
+}
 
-  const [notifications, setNotifications] = useState({
+type NotificationKey = keyof NotificationSettings;
+
+export default function Settings(): React.ReactElement {
+  const { user } = useAuth();
+  const { theme, toggleTheme } = useContext(ThemeContext)!;
+  const [name, setName] = useState<string>(user?.name || '');
+  const [email, setEmail] = useState<string>(user?.email || '');
+
+  const [notifications, setNotifications] = useState<NotificationSettings>({
     taskAssigned: true,
     taskUpdated: true,
     mentions: true,
@@ -19,11 +29,11 @@ export default function Settings() {
     marketing: false,
   });
 
-  const handleNotificationChange = (key) => {
+  const handleNotificationChange = (key: NotificationKey): void => {
     setNotifications(prev => ({ ...prev, [key]: !prev[key] }));
   };
 
-  const handleSaveProfile = () => {
+  const handleSaveProfile = (): void => {
     // TODO: wire up to API
     console.log('Save profile:', { name, email });
   };
@@ -47,7 +57,7 @@ export default function Settings() {
               type="text"
               className="settings-input"
               value={name}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setName(e.target.value)}
             />
           </div>
 
@@ -57,7 +67,7 @@ export default function Settings() {
               type="email"
               className="settings-input"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
             />
           </div>
 
@@ -71,7 +81,7 @@ export default function Settings() {
       <section className="settings-section">
         <h2 className="settings-section__title">Notifications</h2>
         <div className="settings-section__body">
-          {Object.entries(notifications).map(([key, value]) => (
+          {(Object.entries(notifications) as [NotificationKey, boolean][]).map(([key, value]) => (
             <label key={key} className="settings-checkbox">
               <input
                 type="checkbox"

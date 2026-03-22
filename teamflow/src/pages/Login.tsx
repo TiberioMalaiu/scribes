@@ -3,14 +3,14 @@ import './Login.css';
 import { useAuth } from '../hooks/useAuth';
 import { isValidEmail } from '../utils/validators';
 
-export default function Login() {
+export default function Login(): React.ReactElement {
   const { login } = useAuth();
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [error, setError] = useState(null);
-  const [loading, setLoading] = useState(false);
+  const [email, setEmail] = useState<string>('');
+  const [password, setPassword] = useState<string>('');
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState<boolean>(false);
 
-  const handleSubmit = async (e) => {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
     setError(null);
 
@@ -26,8 +26,9 @@ export default function Login() {
     setLoading(true);
     try {
       await login(email, password);
-    } catch (err) {
-      setError(err.message || 'Login failed. Please try again.');
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : 'Login failed. Please try again.';
+      setError(message);
     } finally {
       setLoading(false);
     }
@@ -54,7 +55,7 @@ export default function Login() {
               type="email"
               className="login-input"
               value={email}
-              onChange={(e) => setEmail(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEmail(e.target.value)}
               placeholder="you@company.com"
               autoComplete="email"
             />
@@ -67,7 +68,7 @@ export default function Login() {
               type="password"
               className="login-input"
               value={password}
-              onChange={(e) => setPassword(e.target.value)}
+              onChange={(e: React.ChangeEvent<HTMLInputElement>) => setPassword(e.target.value)}
               placeholder="Enter your password"
               autoComplete="current-password"
             />

@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useParams } from 'react-router-dom';
 import styles from './ProjectOverview.module.css';
 import { getProject, getProjectMembers } from '../api/projects';
+import type { Project, ProjectMember, ProjectMemberListResponse } from '../api/projects';
 import { useTasks } from '../hooks/useTasks';
 import Avatar from '../components/common/Avatar';
 import Badge from '../components/common/Badge';
@@ -9,22 +10,30 @@ import TaskList from '../components/tasks/TaskList';
 import Spinner from '../components/common/Spinner';
 import { formatDate } from '../utils/formatters';
 
-export default function ProjectOverview() {
-  const { projectId } = useParams();
-  const [project, setProject] = useState(null);
-  const [members, setMembers] = useState([]);
-  const [loading, setLoading] = useState(true);
+interface TasksByStatus {
+  done: number;
+  in_progress: number;
+  total: number;
+}
+
+export default function ProjectOverview(): React.ReactElement {
+  const { projectId } = useParams<{ projectId: string }>();
+  const [project, setProject] = useState<Project | null>(null);
+  const [members, setMembers] = useState<ProjectMember[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
   const { tasks, loading: tasksLoading } = useTasks(projectId);
 
   useEffect(() => {
-    async function load() {
+    async function load(): Promise<void> {
       try {
         const [proj, mems] = await Promise.all([
-          getProject(projectId),
-          getProjectMembers(projectId),
+          getProject(projectId!),
+          getProjectMembers(projectId!),
         ]);
         setProject(proj);
-        setMembers(mems.items || mems || []);
+        const memsResponse = mems as ProjectMemberListResponse | ProjectMember[];
+        const memberItems = (memsResponse as ProjectMemberListResponse)?.items || (memsResponse as ProjectMember[]) || [];
+        setMembers(Array.isArray(memberItems) ? memberItems : []);
       } catch (err) {
         console.error('Failed to load project:', err);
       } finally {
@@ -46,7 +55,7 @@ export default function ProjectOverview() {
     return <div className={styles.error}>Project not found</div>;
   }
 
-  const tasksByStatus = {
+  const tasksByStatus: TasksByStatus = {
     done: tasks.filter(t => t.status === 'done').length,
     in_progress: tasks.filter(t => t.status === 'in_progress').length,
     total: tasks.length,

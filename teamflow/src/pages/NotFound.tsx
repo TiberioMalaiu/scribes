@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 
-const containerStyle = {
+const containerStyle: React.CSSProperties = {
   display: 'flex',
   flexDirection: 'column',
   alignItems: 'center',
@@ -11,7 +11,7 @@ const containerStyle = {
   padding: '20px',
 };
 
-const codeStyle = {
+const codeStyle: React.CSSProperties = {
   fontSize: '72px',
   fontWeight: 800,
   color: '#d1d5db',
@@ -19,20 +19,20 @@ const codeStyle = {
   lineHeight: 1,
 };
 
-const titleStyle = {
+const titleStyle: React.CSSProperties = {
   fontSize: '24px',
   fontWeight: 600,
   color: '#111827',
   margin: '16px 0 8px',
 };
 
-const descStyle = {
+const descStyle: React.CSSProperties = {
   fontSize: '14px',
   color: '#6b7280',
   margin: '0 0 24px',
 };
 
-const buttonStyle = {
+const buttonStyle: React.CSSProperties = {
   padding: '10px 20px',
   background: '#2563eb',
   color: '#fff',
@@ -43,7 +43,7 @@ const buttonStyle = {
   cursor: 'pointer',
 };
 
-export default function NotFound() {
+export default function NotFound(): React.ReactElement {
   const navigate = useNavigate();
 
   return (
