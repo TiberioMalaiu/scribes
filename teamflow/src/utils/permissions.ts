@@ -1,6 +1,24 @@
 // Role-based access with implicit enums — hard to type
+import type { ProjectRole } from './constants';
 
-const PERMISSION_MAP = {
+type Permission =
+  | '*'
+  | 'project:read' | 'project:write' | 'project:delete' | 'project:settings'
+  | 'task:read' | 'task:write' | 'task:delete' | 'task:assign'
+  | 'member:read' | 'member:invite' | 'member:remove' | 'member:role'
+  | 'analytics:read' | 'analytics:export';
+
+interface PermissionUser {
+  id: string;
+  role: ProjectRole;
+}
+
+interface PermissionTask {
+  assigneeId: string;
+  createdBy: string;
+}
+
+const PERMISSION_MAP: Record<ProjectRole, Permission[]> = {
   owner: ['*'],
   admin: [
     'project:read', 'project:write', 'project:delete', 'project:settings',
@@ -21,7 +39,7 @@ const PERMISSION_MAP = {
   ],
 };
 
-export function hasPermission(userRole, permission) {
+export function hasPermission(userRole: ProjectRole | null | undefined, permission: Permission | null | undefined): boolean {
   if (!userRole || !permission) return false;
   const perms = PERMISSION_MAP[userRole];
   if (!perms) return false;
@@ -29,7 +47,7 @@ export function hasPermission(userRole, permission) {
   return perms.includes(permission);
 }
 
-export function canEditTask(user, task) {
+export function canEditTask(user: PermissionUser | null | undefined, task: PermissionTask | null | undefined): boolean {
   if (!user || !task) return false;
   if (user.role === 'admin' || user.role === 'owner') return true;
   if (task.assigneeId === user.id) return true;
@@ -37,15 +55,15 @@ export function canEditTask(user, task) {
   return hasPermission(user.role, 'task:write');
 }
 
-export function canDeleteTask(user, task) {
+export function canDeleteTask(user: PermissionUser | null | undefined, task: PermissionTask | null | undefined): boolean {
   if (!user || !task) return false;
   if (user.role === 'admin' || user.role === 'owner') return true;
   if (task.createdBy === user.id) return hasPermission(user.role, 'task:delete');
   return false;
 }
 
-export function getHighestRole(roles) {
-  const hierarchy = ['owner', 'admin', 'member', 'viewer'];
+export function getHighestRole(roles: ProjectRole[]): ProjectRole {
+  const hierarchy: ProjectRole[] = ['owner', 'admin', 'member', 'viewer'];
   for (const role of hierarchy) {
     if (roles.includes(role)) return role;
   }

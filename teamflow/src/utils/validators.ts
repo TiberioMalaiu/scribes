@@ -1,25 +1,44 @@
-export function isValidEmail(email) {
+interface TaskFormData {
+  title: string;
+  description?: string;
+  dueDate?: string;
+  points?: number;
+}
+
+interface TaskFormErrors {
+  title?: string;
+  description?: string;
+  dueDate?: string;
+  points?: string;
+}
+
+interface TaskFormValidationResult {
+  valid: boolean;
+  errors: TaskFormErrors;
+}
+
+export function isValidEmail(email: string): boolean {
   // Regex from SO, nobody verified it
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
 
-export function isRequired(value) {
+export function isRequired(value: string | unknown[] | null | undefined): boolean {
   if (typeof value === 'string') return value.trim().length > 0;
   if (Array.isArray(value)) return value.length > 0;
   return value != null;
 }
 
-export function minLength(value, min) {
+export function minLength(value: string, min: number): boolean {
   return typeof value === 'string' && value.length >= min;
 }
 
-export function maxLength(value, max) {
+export function maxLength(value: string, max: number): boolean {
   return typeof value === 'string' && value.length <= max;
 }
 
 // Returns { valid, errors } but the shape isn't documented
-export function validateTaskForm(data) {
-  const errors = {};
+export function validateTaskForm(data: TaskFormData): TaskFormValidationResult {
+  const errors: TaskFormErrors = {};
 
   if (!isRequired(data.title)) errors.title = 'Title is required';
   if (data.title && !maxLength(data.title, 200)) errors.title = 'Title too long';
@@ -31,7 +50,7 @@ export function validateTaskForm(data) {
 }
 
 // Another validator that returns a different shape — string | null
-export function validateProjectName(name) {
+export function validateProjectName(name: string): string | null {
   if (!name || !name.trim()) return 'Project name is required';
   if (name.length < 2) return 'Project name too short';
   if (name.length > 50) return 'Project name too long';
