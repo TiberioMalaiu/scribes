@@ -20,7 +20,7 @@ interface DropdownProps {
 
 export default function Dropdown({ trigger, options, onSelect, align }: DropdownProps) {
   const [isOpen, setIsOpen] = useState(false);
-  const ref = useClickOutside(() => setIsOpen(false));
+  const ref = useClickOutside<HTMLDivElement>(() => setIsOpen(false));
 
   const handleSelect = (option: DropdownOption) => {
     onSelect(option);
