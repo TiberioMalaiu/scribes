@@ -1,10 +1,37 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, ReactNode } from 'react';
 import { login as loginApi, logout as logoutApi, refreshToken } from '../api/auth';
 
-export const AuthContext = createContext();
+interface User {
+  id: string;
+  name: string;
+  email: string;
+  role: string;
+  avatarUrl: string | null;
+  status: string;
+  permissions: string[];
+}
+
+interface LoginResponse {
+  user: User;
+  token: string;
+}
+
+interface AuthContextValue {
+  user: User | null;
+  loading: boolean;
+  login: (email: string, password: string) => Promise<LoginResponse>;
+  logout: () => Promise<void>;
+  hasPermission: (permission: string) => boolean;
+}
+
+interface AuthProviderProps {
+  children: ReactNode;
+}
+
+export const AuthContext = createContext<AuthContextValue | null>(null);
 
 // HACK: hardcoded dev user so we can bypass login while there's no backend
-const DEV_USER = {
+const DEV_USER: User = {
   id: 'usr_001',
   name: 'Sarah Chen',
   email: 'sarah@teamflow.dev',
@@ -17,8 +44,8 @@ const DEV_USER = {
     'analytics:read', 'analytics:export'],
 };
 
-export function AuthProvider({ children }) {
-  const [user, setUser] = useState(DEV_USER);
+export function AuthProvider({ children }: AuthProviderProps) {
+  const [user, setUser] = useState<User | null>(DEV_USER);
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
@@ -32,15 +59,15 @@ export function AuthProvider({ children }) {
     }
   }, []);
 
-  const login = async (email, password) => {
-    const response = await loginApi(email, password);
+  const login = async (email: string, password: string): Promise<LoginResponse> => {
+    const response = (await loginApi(email, password)) as unknown as LoginResponse;
     setUser(response.user);
     localStorage.setItem('user', JSON.stringify(response.user));
     localStorage.setItem('token', response.token);
     return response;
   };
 
-  const logout = async () => {
+  const logout = async (): Promise<void> => {
     try {
       await logoutApi();
     } finally {
@@ -50,7 +77,7 @@ export function AuthProvider({ children }) {
     }
   };
 
-  const hasPermission = (permission) => {
+  const hasPermission = (permission: string): boolean => {
     if (!user) return false;
     return user.permissions?.includes(permission) || user.role === 'admin';
   };
