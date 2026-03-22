@@ -1,0 +1,119 @@
+from datetime import datetime
+from pathlib import Path
+import config
+
+DASHBOARD_PATH = Path(__file__).parent / "dashboard.html"
+
+def render_dashboard(sessions, playbook_id=None):
+    """Generate a self-contained HTML dashboard from session states."""
+    now = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+    status_colors = {
+        "new": "#6b7280",
+        "claimed": "#f59e0b",
+        "running": "#3b82f6",
+        "exit": "#10b981",
+        "error": "#ef4444",
+        "suspended": "#f97316",
+        "resuming": "#8b5cf6",
+    }
+
+    rows = ""
+    total = len(sessions)
+    done = sum(1 for s in sessions if s["status"] == "exit")
+    errored = sum(1 for s in sessions if s["status"] == "error")
+    running = sum(1 for s in sessions if s["status"] in ("running", "claimed", "resuming"))
+
+    for s in sessions:
+        color = status_colors.get(s["status"], "#6b7280")
+        prs = ""
+        for pr in s.get("pull_requests", []):
+            prs += f'<a href="{pr["pr_url"]}" target="_blank">{pr["pr_state"]}</a> '
+
+        rows += f"""
+        <tr>
+            <td><strong>{s['module']}</strong></td>
+            <td><code>{s.get('path', '-')}</code></td>
+            <td><span class="badge" style="background:{color}20;color:{color};border:1px solid {color}40">{s['status']}</span></td>
+            <td>{s.get('status_detail', '-')}</td>
+            <td>{s.get('acus_consumed', 0):.1f}</td>
+            <td>{prs or '-'}</td>
+            <td><a href="{s['url']}" target="_blank">Open</a></td>
+        </tr>"""
+
+    progress_pct = round((done / total) * 100) if total else 0
+
+    playbook_info = ""
+    if playbook_id:
+        playbook_info = f"""
+    <div class="info-bar">
+      <span class="info-label">Playbook</span> {config.PLAYBOOK_TITLE}
+      <span class="info-sep">|</span>
+      <span class="info-label">ID</span> <code>{playbook_id}</code>
+    </div>"""
+
+    html = f"""<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="refresh" content="30">
+<title>TeamFlow TS Migration</title>
+<style>
+  * {{ margin:0; padding:0; box-sizing:border-box; }}
+  body {{ font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif; background:#f8f9fa; color:#1a1a2e; padding:32px; }}
+  h1 {{ font-size:24px; font-weight:700; margin-bottom:4px; }}
+  .subtitle {{ color:#6b7280; font-size:14px; margin-bottom:16px; }}
+  .info-bar {{ background:#eff6ff; border:1px solid #bfdbfe; border-radius:8px; padding:10px 16px; font-size:13px; margin-bottom:20px; color:#1e40af; }}
+  .info-label {{ font-weight:600; }}
+  .info-sep {{ margin:0 8px; color:#93c5fd; }}
+  code {{ background:#dbeafe; padding:2px 6px; border-radius:4px; font-size:12px; }}
+  .stats {{ display:grid; grid-template-columns:repeat(4,1fr); gap:12px; margin-bottom:24px; }}
+  .stat {{ background:#fff; border:1px solid #e5e7eb; border-radius:8px; padding:16px; }}
+  .stat-value {{ font-size:28px; font-weight:700; }}
+  .stat-label {{ font-size:13px; color:#6b7280; }}
+  .progress-bar {{ width:100%; height:8px; background:#e5e7eb; border-radius:4px; margin-bottom:24px; overflow:hidden; }}
+  .progress-fill {{ height:100%; background:#10b981; border-radius:4px; transition:width 0.5s; }}
+  table {{ width:100%; background:#fff; border:1px solid #e5e7eb; border-radius:8px; border-collapse:collapse; }}
+  th {{ text-align:left; padding:12px 16px; border-bottom:2px solid #e5e7eb; font-size:12px; text-transform:uppercase; color:#6b7280; }}
+  td {{ padding:12px 16px; border-bottom:1px solid #f3f4f6; font-size:14px; }}
+  .badge {{ display:inline-block; padding:2px 10px; border-radius:999px; font-size:12px; font-weight:600; }}
+  a {{ color:#2563eb; text-decoration:none; }}
+  a:hover {{ text-decoration:underline; }}
+  .footer {{ margin-top:16px; font-size:12px; color:#9ca3af; }}
+</style>
+</head>
+<body>
+  <h1>TeamFlow JS &rarr; TypeScript Migration</h1>
+  <p class="subtitle">Parallel Devin sessions &bull; Playbook-driven &bull; Auto-refreshes every 30s &bull; Last updated: {now}</p>
+  {playbook_info}
+  <div class="stats">
+    <div class="stat">
+      <div class="stat-value">{total}</div>
+      <div class="stat-label">Total Modules</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" style="color:#3b82f6">{running}</div>
+      <div class="stat-label">Running</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" style="color:#10b981">{done}</div>
+      <div class="stat-label">Completed</div>
+    </div>
+    <div class="stat">
+      <div class="stat-value" style="color:#ef4444">{errored}</div>
+      <div class="stat-label">Errors</div>
+    </div>
+  </div>
+
+  <div class="progress-bar"><div class="progress-fill" style="width:{progress_pct}%"></div></div>
+
+  <table>
+    <thead><tr><th>Module</th><th>Directory</th><th>Status</th><th>Detail</th><th>ACUs</th><th>PRs</th><th>Session</th></tr></thead>
+    <tbody>{rows}</tbody>
+  </table>
+
+  <p class="footer">Dashboard auto-generated by scribe/migrate.py</p>
+</body>
+</html>"""
+
+    DASHBOARD_PATH.write_text(html)

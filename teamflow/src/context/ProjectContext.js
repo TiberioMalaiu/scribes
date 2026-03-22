@@ -26,7 +26,10 @@ export function ProjectProvider({ children }) {
     try {
       const data = await getProjects();
       const items = data?.items || data;
-      setProjects(Array.isArray(items) ? items : []);  // API inconsistency
+      // Only overwrite seed data if API returned real projects
+      if (Array.isArray(items) && items.length > 0) {
+        setProjects(items);  // API inconsistency
+      }
     } catch (err) {
       console.error('Failed to fetch projects:', err);
     } finally {

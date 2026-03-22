@@ -1,0 +1,35 @@
+{
+  "playbook_id": "playbook-0a7376be73fb4bb69c3a99f938fa42e2",
+  "sessions": [
+    {
+      "module": "utils",
+      "path": "teamflow/src/utils",
+      "session_id": "4ae6dbf8b2e1453d93873d05624c58f2",
+      "url": "https://app.devin.ai/sessions/4ae6dbf8b2e1453d93873d05624c58f2",
+      "status": "new",
+      "status_detail": "",
+      "acus_consumed": 0,
+      "pull_requests": []
+    },
+    {
+      "module": "api",
+      "path": "teamflow/src/api",
+      "session_id": "06b8bf169d644e6981de099c8f36d85c",
+      "url": "https://app.devin.ai/sessions/06b8bf169d644e6981de099c8f36d85c",
+      "status": "new",
+      "status_detail": "",
+      "acus_consumed": 0,
+      "pull_requests": []
+    },
+    {
+      "module": "context",
+      "path": "teamflow/src/context",
+      "session_id": "3b71ed7d4add4bf59402bdda26c9247a",
+      "url": "https://app.devin.ai/sessions/3b71ed7d4add4bf59402bdda26c9247a",
+      "status": "new",
+      "status_detail": "",
+      "acus_consumed": 0,
+      "pull_requests": []
+    }
+  ]
+}

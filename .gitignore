@@ -10,3 +10,6 @@ build
 *.log
 npm-debug.log*
 .vite
+__pycache__
+*.pyc
+.venv

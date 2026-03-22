@@ -1,21 +1,15 @@
-# TeamFlow
+# Scribes
 
-Internal project management tool.
+Devin demo: JS-to-TypeScript migration.
 
-## Setup
-npm install && npm start
+## Structure
 
-## Stack
-- React 18 + React Router 6
-- Axios for API calls
-- Recharts for data viz
-- Tailwind CSS (newer components)
+- **`teamflow/`** — React frontend codebase (JS/JSX, the migration target)
+- **`scribe/`** — Python script that orchestrates the Devin migration
 
-## Notes
-- API docs are in Notion (ask @sarah for the link)
-- The auth flow is documented... somewhere
-- We plan to migrate to TypeScript "soon"
-- Don't touch BurndownChart.jsx unless you absolutely have to
+## Quick Start
 
-## Environment
-REACT_APP_API_URL=http://localhost:3001/api
+```bash
+# Run the TeamFlow app
+cd teamflow && npm install && npm run dev
+```

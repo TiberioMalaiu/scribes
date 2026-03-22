@@ -28,10 +28,14 @@ export function useTasks(projectId, initialFilters) {
     try {
       const result = await getTasks(projectId, { ...filters, page: pagination.page });
       const items = result?.items || result?.data || result;
-      setTasks(Array.isArray(items) ? items : []);  // API inconsistency
-      setPagination(prev => ({ ...prev, total: result?.total || result?.count || 0 }));
+      // Only overwrite seed data if API returned a real array of tasks
+      if (Array.isArray(items) && items.length > 0) {
+        setTasks(items);  // API inconsistency
+        setPagination(prev => ({ ...prev, total: result?.total || result?.count || 0 }));
+      }
     } catch (err) {
-      setError(err.message || 'Failed to load tasks');
+      // Keep seed data if API is unavailable
+      console.warn('Tasks API unavailable, using seed data:', err.message || err);
     } finally {
       setLoading(false);
     }
